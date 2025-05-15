@@ -1,6 +1,6 @@
-module github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/orchestrator
+module github.com/rafaelmascaro/weather-api-otel/orchestrator
 
-go 1.23.3
+go 1.23.4
 
 require (
 	github.com/go-chi/chi v1.5.5

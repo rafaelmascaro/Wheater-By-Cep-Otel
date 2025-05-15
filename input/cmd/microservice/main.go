@@ -9,9 +9,9 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/input/configs"
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/input/internal/adapters/api"
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/input/internal/infra/web"
+	"github.com/rafaelmascaro/weather-api-otel/input/configs"
+	"github.com/rafaelmascaro/weather-api-otel/input/internal/adapters/api"
+	"github.com/rafaelmascaro/weather-api-otel/input/internal/infra/web"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/zipkin"
@@ -92,13 +92,13 @@ func main() {
 
 	tracer := otel.Tracer("microservice-tracer")
 
-	orchestratorClient := api.NewOrchestratorClient(
+	Orchestrator := api.NewOrchestrator(
 		configs.OrchestratorClientUrl,
 		tracer,
 		configs.OrchestratorSpanNameOTEL,
 	)
 
-	server := web.NewServer(orchestratorClient, tracer, configs.RequestNameOTEL)
+	server := web.NewServer(Orchestrator, tracer, configs.RequestNameOTEL)
 	router := server.CreateServer()
 
 	go func() {

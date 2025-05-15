@@ -9,9 +9,9 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/orchestrator/configs"
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/orchestrator/internal/adapters/api"
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/orchestrator/internal/infra/web"
+	"github.com/rafaelmascaro/weather-api-otel/orchestrator/configs"
+	"github.com/rafaelmascaro/weather-api-otel/orchestrator/internal/adapters/api"
+	"github.com/rafaelmascaro/weather-api-otel/orchestrator/internal/infra/web"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/zipkin"

@@ -4,31 +4,31 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/rafaelmascaro/weather-api-otel/input/internal/entity"
+	"github.com/rafaelmascaro/weather-api-otel/input/internal/usecase"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/input/internal/entity"
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/input/internal/usecase"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 )
 
 type Webserver struct {
-	OrchestratorClient entity.OrchestratorClientInterface
-	OTELTracer         trace.Tracer
-	RequestNameOTEL    string
+	Orchestrator    entity.OrchestratorInterface
+	OTELTracer      trace.Tracer
+	RequestNameOTEL string
 }
 
 // NewServer creates a new server instance
 func NewServer(
-	orchestratorClient entity.OrchestratorClientInterface,
+	Orchestrator entity.OrchestratorInterface,
 	otelTracer trace.Tracer,
 	requestNameOTEL string,
 ) *Webserver {
 	return &Webserver{
-		OrchestratorClient: orchestratorClient,
-		OTELTracer:         otelTracer,
-		RequestNameOTEL:    requestNameOTEL,
+		Orchestrator:    Orchestrator,
+		OTELTracer:      otelTracer,
+		RequestNameOTEL: requestNameOTEL,
 	}
 }
 
@@ -48,14 +48,14 @@ func (h *Webserver) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	ctx, span := h.OTELTracer.Start(ctx, h.RequestNameOTEL)
 	defer span.End()
 
-	var input usecase.TempInputDTO
+	var input usecase.TempInput
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	getTemp := usecase.NewGetTempUseCase(h.OrchestratorClient)
+	getTemp := usecase.NewGetTempUseCase(h.Orchestrator)
 	output, err := getTemp.Execute(ctx, input)
 
 	if err != nil {

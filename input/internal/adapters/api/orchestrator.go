@@ -7,31 +7,31 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/input/internal/entity"
+	"github.com/rafaelmascaro/weather-api-otel/input/internal/entity"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 )
 
-type OrchestratorClient struct {
+type Orchestrator struct {
 	BaseURL      string
 	OTELTracer   trace.Tracer
 	SpanNameOTEL string
 }
 
-func NewOrchestratorClient(
+func NewOrchestrator(
 	url string,
 	tracer trace.Tracer,
 	spanName string,
-) *OrchestratorClient {
-	return &OrchestratorClient{
+) *Orchestrator {
+	return &Orchestrator{
 		BaseURL:      url,
 		OTELTracer:   tracer,
 		SpanNameOTEL: spanName,
 	}
 }
 
-func (o *OrchestratorClient) GetTemp(ctx context.Context, cep entity.CEP) (*entity.Temp, error) {
+func (o *Orchestrator) GetTemp(ctx context.Context, cep entity.CEP) (*entity.Temp, error) {
 	ctx, span := o.OTELTracer.Start(ctx, o.SpanNameOTEL)
 	defer span.End()
 

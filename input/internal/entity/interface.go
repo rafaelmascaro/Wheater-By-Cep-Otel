@@ -2,6 +2,6 @@ package entity
 
 import "context"
 
-type OrchestratorClientInterface interface {
+type OrchestratorInterface interface {
 	GetTemp(context.Context, CEP) (*Temp, error)
 }

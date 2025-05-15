@@ -3,14 +3,14 @@ package usecase
 import (
 	"context"
 
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/input/internal/entity"
+	"github.com/rafaelmascaro/weather-api-otel/input/internal/entity"
 )
 
-type TempInputDTO struct {
+type TempInput struct {
 	Zipcode string `json:"cep"`
 }
 
-type TempOutputDTO struct {
+type TempOutput struct {
 	City  string  `json:"city"`
 	TempC float64 `json:"temp_C"`
 	TempF float64 `json:"temp_F"`
@@ -18,29 +18,29 @@ type TempOutputDTO struct {
 }
 
 type GetTempUseCase struct {
-	OrchestratorClient entity.OrchestratorClientInterface
+	Orchestrator entity.OrchestratorInterface
 }
 
 func NewGetTempUseCase(
-	orchestratorClient entity.OrchestratorClientInterface,
+	Orchestrator entity.OrchestratorInterface,
 ) *GetTempUseCase {
 	return &GetTempUseCase{
-		OrchestratorClient: orchestratorClient,
+		Orchestrator: Orchestrator,
 	}
 }
 
-func (g *GetTempUseCase) Execute(ctx context.Context, input TempInputDTO) (TempOutputDTO, error) {
+func (g *GetTempUseCase) Execute(ctx context.Context, input TempInput) (TempOutput, error) {
 	cep, err := entity.NewCEP(input.Zipcode)
 	if err != nil {
-		return TempOutputDTO{}, err
+		return TempOutput{}, err
 	}
 
-	temp, err := g.OrchestratorClient.GetTemp(ctx, cep)
+	temp, err := g.Orchestrator.GetTemp(ctx, cep)
 	if err != nil {
-		return TempOutputDTO{}, err
+		return TempOutput{}, err
 	}
 
-	dto := TempOutputDTO{
+	dto := TempOutput{
 		City:  temp.City,
 		TempC: temp.TempC,
 		TempF: temp.TempF,

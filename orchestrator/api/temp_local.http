@@ -1,2 +1,2 @@
-GET http://localhost:8282/temp?CEP=13098401 HTTP/1.1
+GET http://localhost:8282/temp?CEP=13180000 HTTP/1.1
 Host: localhost:8282

@@ -4,10 +4,10 @@ import (
 	"context"
 	"math"
 
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/orchestrator/internal/entity"
+	"github.com/rafaelmascaro/weather-api-otel/orchestrator/internal/entity"
 )
 
-type TempOutputDTO struct {
+type TempOutput struct {
 	City  string  `json:"city"`
 	TempC float64 `json:"temp_C"`
 	TempF float64 `json:"temp_F"`
@@ -29,25 +29,25 @@ func NewGetTempUseCase(
 	}
 }
 
-func (g *GetTempUseCase) Execute(ctx context.Context, input string) (TempOutputDTO, error) {
+func (g *GetTempUseCase) Execute(ctx context.Context, input string) (TempOutput, error) {
 	cep, err := entity.NewCEP(string(input))
 	if err != nil {
-		return TempOutputDTO{}, err
+		return TempOutput{}, err
 	}
 
 	location, err := g.LocationClient.GetLocation(ctx, cep)
 	if err != nil {
-		return TempOutputDTO{}, err
+		return TempOutput{}, err
 	}
 
 	tempC, err := g.WeatherClient.GetWeather(ctx, location)
 	if err != nil {
-		return TempOutputDTO{}, err
+		return TempOutput{}, err
 	}
 
 	temp := entity.NewTemperature(tempC)
 
-	dto := TempOutputDTO{
+	dto := TempOutput{
 		City:  location,
 		TempC: math.Round(temp.TempC*10) / 10,
 		TempF: math.Round(temp.TempF*10) / 10,

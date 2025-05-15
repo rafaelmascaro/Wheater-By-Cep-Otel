@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/rafaelmascaro/Weather-By-CEP-With-Tracing/orchestrator/internal/entity"
+	"github.com/rafaelmascaro/weather-api-otel/orchestrator/internal/entity"
 	"go.opentelemetry.io/otel/trace"
 )
 

@@ -1,5 +1,40 @@
-version: '3.0'
+version: "3"
+
 services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - ./.docker/prometheus.yaml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: always
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    restart: always
+    ports:
+      - "16686:16686"
+      - "14268"
+      - "14250"
+  
+  zipkin:
+    image: openzipkin/zipkin:latest
+    environment:
+      - JAVA_OPTS=-Xms1024m -Xmx1024m -XX:+ExitOnOutOfMemoryError
+    restart: always
+    ports:
+      - "9411:9411"
+
   otel-collector:
     image: otel/opentelemetry-collector:latest
     container_name: otel-collector
@@ -8,32 +43,34 @@ services:
     volumes:
       - ./.docker/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
+      - "1888:1888"   # pprof extension
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "13133:13133" # health_check extension
       - "4317:4317"   # OTLP gRPC receiver
-      - "9411:9411"   # Zipkin
+      - "55679:55679" # zpages extension
+    depends_on:
+      - jaeger
+      - zipkin
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:13133"]
 
-  zipkin:
-    image: openzipkin/zipkin:latest
-    container_name: zipkin
-    ports:
-      - "9412:9411"
-    restart: always
-
-  goapp1:
-    container_name: goapp1
+  input:
     build:
       context: ./input
     ports:
-      - "8181:8181"
+      - 8181:8181
+    env_file:
+      - input/cmd/microservice/.env
     depends_on:
       - otel-collector
-      - zipkin
 
-  goapp2:
-    container_name: goapp2
+  orchestrator:
     build:
       context: ./orchestrator
     ports:
-      - "8282:8282"
+      - 8282:8282
+    env_file:
+      - orchestrator/cmd/microservice/.env
     depends_on:
-      - otel-collector
-      - zipkin
+      - input
