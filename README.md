@@ -6,7 +6,7 @@ A aplicação permite consultar a temperatura em graus Celsius, Fahrenheit, Kelv
 1. Certifique-se de ter o Docker instalado.
 2. Suba os containers necessários executando o comando:
     ```bash
-    docker-compose up --build
+    docker-compose up --build -d
     ```
 3. Aguarde até que a mensagem de que as aplicações estejam rodando nas portas :8181 e :8282 seja exibida nos logs.
 4. O serviço esta disponível no ambiente local. Pode ser consumido usando o modelo disponível em `api/temp_local.http` (ajustar o CEP).
